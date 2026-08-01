@@ -25,6 +25,26 @@
       Нажать клавишу для захвата
     </button>
 
+    <details class="advanced">
+      <summary>Задать Windows VK-код вручную</summary>
+      <div class="vk-editor">
+        <input
+          id="virtual-key"
+          type="number"
+          min="1"
+          max="255"
+          placeholder="1–255"
+          aria-label="Windows VK-код"
+        >
+        <button id="apply-virtual-key" type="button">Применить</button>
+      </div>
+      <p>
+        Запасной способ для редких клавиш, которые инспектор StreamDock не может
+        захватить. Диапазон 1–255 задан Windows, а количество самих биндов плагин
+        не ограничивает.
+      </p>
+    </details>
+
     <div id="current" class="current">Текущая: F8</div>
 
     <fieldset id="modifiers">

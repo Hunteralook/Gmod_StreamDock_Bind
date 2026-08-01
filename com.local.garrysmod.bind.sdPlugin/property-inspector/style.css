@@ -103,6 +103,33 @@ button.capturing {
   box-shadow: 0 0 0 2px rgba(115, 209, 61, 0.18);
 }
 
+.advanced {
+  margin-top: -4px;
+  color: #bcc3cc;
+  font-size: 11px;
+}
+
+.advanced summary {
+  cursor: pointer;
+  user-select: none;
+}
+
+.advanced[open] summary {
+  margin-bottom: 8px;
+  color: #f5f7fa;
+}
+
+.advanced p {
+  margin: 6px 0 0;
+  line-height: 1.4;
+}
+
+.vk-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(100px, 1fr);
+  gap: 7px;
+}
+
 .current {
   margin-top: -5px;
   color: #95de64;

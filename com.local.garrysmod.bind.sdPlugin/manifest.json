@@ -45,7 +45,7 @@
   "Description": "Triggers keyboard and mouse buttons bound in Garry's Mod.",
   "CodePath": "GModBind.exe",
   "CodePathWin": "GModBind.exe",
-  "Version": "1.0.0",
+  "Version": "1.1.0",
   "ApplicationsToMonitor": {
     "windows": [
       "gmod.exe",

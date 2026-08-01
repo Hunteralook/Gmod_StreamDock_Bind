@@ -17,7 +17,7 @@ const defaults = {
 };
 
 const keyboardPresets = [
-  ...Array.from({ length: 12 }, (_, index) => ({
+  ...Array.from({ length: 24 }, (_, index) => ({
     id: `F${index + 1}`,
     label: `F${index + 1}`,
     vk: 0x70 + index,
@@ -41,6 +41,18 @@ const keyboardPresets = [
   { id: "Escape", label: "Escape", vk: 0x1B, code: "Escape" },
   { id: "Backspace", label: "Backspace", vk: 0x08, code: "Backspace" },
   { id: "CapsLock", label: "Caps Lock", vk: 0x14, code: "CapsLock" },
+  { id: "PrintScreen", label: "Print Screen", vk: 0x2C, code: "PrintScreen" },
+  { id: "ScrollLock", label: "Scroll Lock", vk: 0x91, code: "ScrollLock" },
+  { id: "Pause", label: "Pause / Break", vk: 0x13, code: "Pause" },
+  { id: "ContextMenu", label: "Контекстное меню", vk: 0x5D, code: "ContextMenu" },
+  { id: "ControlLeft", label: "Левый Ctrl", vk: 0xA2, code: "ControlLeft" },
+  { id: "ControlRight", label: "Правый Ctrl", vk: 0xA3, code: "ControlRight" },
+  { id: "ShiftLeft", label: "Левый Shift", vk: 0xA0, code: "ShiftLeft" },
+  { id: "ShiftRight", label: "Правый Shift", vk: 0xA1, code: "ShiftRight" },
+  { id: "AltLeft", label: "Левый Alt", vk: 0xA4, code: "AltLeft" },
+  { id: "AltRight", label: "Правый Alt", vk: 0xA5, code: "AltRight" },
+  { id: "MetaLeft", label: "Левый Win", vk: 0x5B, code: "MetaLeft" },
+  { id: "MetaRight", label: "Правый Win", vk: 0x5C, code: "MetaRight" },
   { id: "ArrowUp", label: "Стрелка вверх", vk: 0x26, code: "ArrowUp" },
   { id: "ArrowDown", label: "Стрелка вниз", vk: 0x28, code: "ArrowDown" },
   { id: "ArrowLeft", label: "Стрелка влево", vk: 0x25, code: "ArrowLeft" },
@@ -61,6 +73,7 @@ const keyboardPresets = [
   { id: "Numpad7", label: "Num 7", vk: 0x67, code: "Numpad7" },
   { id: "Numpad8", label: "Num 8", vk: 0x68, code: "Numpad8" },
   { id: "Numpad9", label: "Num 9", vk: 0x69, code: "Numpad9" },
+  { id: "NumLock", label: "Num Lock", vk: 0x90, code: "NumLock" },
   { id: "NumpadMultiply", label: "Num *", vk: 0x6A, code: "NumpadMultiply" },
   { id: "NumpadAdd", label: "Num +", vk: 0x6B, code: "NumpadAdd" },
   { id: "NumpadSubtract", label: "Num -", vk: 0x6D, code: "NumpadSubtract" },
@@ -76,7 +89,26 @@ const keyboardPresets = [
   { id: "Quote", label: "' / \"", vk: 0xDE, code: "Quote" },
   { id: "Comma", label: ", / <", vk: 0xBC, code: "Comma" },
   { id: "Period", label: ". / >", vk: 0xBE, code: "Period" },
-  { id: "Slash", label: "/ / ?", vk: 0xBF, code: "Slash" }
+  { id: "Slash", label: "/ / ?", vk: 0xBF, code: "Slash" },
+  { id: "BrowserBack", label: "Браузер: назад", vk: 0xA6, code: "BrowserBack" },
+  { id: "BrowserForward", label: "Браузер: вперёд", vk: 0xA7, code: "BrowserForward" },
+  { id: "BrowserRefresh", label: "Браузер: обновить", vk: 0xA8, code: "BrowserRefresh" },
+  { id: "BrowserStop", label: "Браузер: стоп", vk: 0xA9, code: "BrowserStop" },
+  { id: "BrowserSearch", label: "Браузер: поиск", vk: 0xAA, code: "BrowserSearch" },
+  { id: "BrowserFavorites", label: "Браузер: избранное", vk: 0xAB, code: "BrowserFavorites" },
+  { id: "BrowserHome", label: "Браузер: главная", vk: 0xAC, code: "BrowserHome" },
+  { id: "AudioVolumeMute", label: "Звук: выключить", vk: 0xAD, code: "AudioVolumeMute" },
+  { id: "AudioVolumeDown", label: "Звук: тише", vk: 0xAE, code: "AudioVolumeDown" },
+  { id: "AudioVolumeUp", label: "Звук: громче", vk: 0xAF, code: "AudioVolumeUp" },
+  { id: "MediaTrackNext", label: "Медиа: следующий трек", vk: 0xB0, code: "MediaTrackNext" },
+  { id: "MediaTrackPrevious", label: "Медиа: предыдущий трек", vk: 0xB1, code: "MediaTrackPrevious" },
+  { id: "MediaStop", label: "Медиа: стоп", vk: 0xB2, code: "MediaStop" },
+  { id: "MediaPlayPause", label: "Медиа: play / pause", vk: 0xB3, code: "MediaPlayPause" },
+  { id: "LaunchMail", label: "Запустить почту", vk: 0xB4, code: "LaunchMail" },
+  { id: "LaunchMediaPlayer", label: "Запустить медиаплеер", vk: 0xB5, code: "LaunchMediaPlayer" },
+  { id: "LaunchApplication1", label: "Запустить приложение 1", vk: 0xB6, code: "LaunchApplication1" },
+  { id: "LaunchApplication2", label: "Запустить приложение 2", vk: 0xB7, code: "LaunchApplication2" },
+  { id: "Sleep", label: "Сон", vk: 0x5F, code: "Sleep" }
 ];
 
 const mousePresets = [
@@ -91,6 +123,7 @@ const mousePresets = [
 
 const codeMap = new Map(keyboardPresets.map(item => [item.code, item]));
 const dom = {};
+let capturedKeyboardGroup;
 let websocket;
 let propertyInspectorUuid;
 let context;
@@ -102,15 +135,105 @@ function byId(id) {
   return document.getElementById(id);
 }
 
+function isValidVirtualKey(value) {
+  return Number.isInteger(value) && value >= 1 && value <= 0xFF;
+}
+
+function appendKeyboardOption(group, item) {
+  if (!group) return;
+
+  const option = document.createElement("option");
+  option.value = `keyboard:${item.id}`;
+  option.textContent = item.label;
+  group.appendChild(option);
+}
+
+function registerCapturedKeyboardPreset(item) {
+  const existing = codeMap.get(item.code);
+  if (existing) return existing;
+
+  keyboardPresets.push(item);
+  codeMap.set(item.code, item);
+  appendKeyboardOption(capturedKeyboardGroup, item);
+  return item;
+}
+
+function virtualKeyFromEvent(event) {
+  const value = Number(event.keyCode || event.which || 0);
+  return isValidVirtualKey(value) ? value : 0;
+}
+
+function keyLabelFromEvent(event) {
+  const key = typeof event.key === "string" ? event.key.trim() : "";
+  if (key && key !== "Unidentified" && key !== "Dead") {
+    return key.length === 1 ? key.toUpperCase() : key;
+  }
+
+  if (event.code && event.code !== "Unidentified") {
+    return event.code;
+  }
+
+  const vk = virtualKeyFromEvent(event);
+  return `VK 0x${vk.toString(16).toUpperCase().padStart(2, "0")}`;
+}
+
+function keyboardPresetFromEvent(event) {
+  const known = codeMap.get(event.code);
+  if (known) return known;
+
+  const vk = virtualKeyFromEvent(event);
+  if (!vk) return null;
+
+  const code = event.code && event.code !== "Unidentified"
+    ? event.code
+    : `VirtualKey${vk}`;
+
+  return registerCapturedKeyboardPreset({
+    id: code,
+    label: keyLabelFromEvent(event),
+    vk,
+    code
+  });
+}
+
+function virtualKeyPreset(value, label = "") {
+  const vk = Number(value);
+  if (!isValidVirtualKey(vk)) return null;
+
+  const code = `VirtualKey${vk}`;
+  return registerCapturedKeyboardPreset({
+    id: code,
+    label: label || `VK 0x${vk.toString(16).toUpperCase().padStart(2, "0")}`,
+    vk,
+    code
+  });
+}
+
+function ensureCurrentKeyboardPreset() {
+  if (settings.kind !== "keyboard" || codeMap.has(settings.code)) return;
+
+  const vk = Number(settings.vk);
+  if (!isValidVirtualKey(vk)) return;
+
+  const code = settings.code && !settings.code.includes(":")
+    ? settings.code
+    : `VirtualKey${vk}`;
+  const item = registerCapturedKeyboardPreset({
+    id: code,
+    label: settings.keyLabel || `VK 0x${vk.toString(16).toUpperCase().padStart(2, "0")}`,
+    vk,
+    code
+  });
+  settings.code = item.code;
+}
+
 function buildPresetOptions() {
   const keyboardGroup = document.createElement("optgroup");
   keyboardGroup.label = "Клавиатура";
-  keyboardPresets.forEach(item => {
-    const option = document.createElement("option");
-    option.value = `keyboard:${item.id}`;
-    option.textContent = item.label;
-    keyboardGroup.appendChild(option);
-  });
+  keyboardPresets.forEach(item => appendKeyboardOption(keyboardGroup, item));
+
+  capturedKeyboardGroup = document.createElement("optgroup");
+  capturedKeyboardGroup.label = "Захваченные и VK-коды";
 
   const mouseGroup = document.createElement("optgroup");
   mouseGroup.label = "Мышь";
@@ -121,7 +244,7 @@ function buildPresetOptions() {
     mouseGroup.appendChild(option);
   });
 
-  dom.preset.append(keyboardGroup, mouseGroup);
+  dom.preset.append(keyboardGroup, capturedKeyboardGroup, mouseGroup);
 }
 
 function modifierLabel() {
@@ -136,6 +259,8 @@ function modifierLabel() {
 
 function render() {
   if (!dom.preset) return;
+
+  ensureCurrentKeyboardPreset();
 
   const presetValue = settings.kind === "mouse"
     ? `mouse:${settings.mouseAction}`
@@ -235,9 +360,9 @@ function handleCapturedKey(event) {
     return;
   }
 
-  const item = codeMap.get(event.code);
+  const item = keyboardPresetFromEvent(event);
   if (!item) {
-    showStatus(`Клавиша ${event.code || event.key} не поддерживается`);
+    showStatus("Не удалось определить VK-код. Введите его вручную ниже.");
     return;
   }
 
@@ -262,6 +387,26 @@ function wireUi() {
   dom.capture.addEventListener("click", () => {
     if (capturing) stopCapture();
     else startCapture();
+  });
+
+  const applyVirtualKey = () => {
+    const item = virtualKeyPreset(Number(dom.virtualKey.value));
+    if (!item) {
+      showStatus("VK-код должен быть целым числом от 1 до 255");
+      return;
+    }
+
+    setKeyboardPreset(item);
+    dom.virtualKey.value = "";
+    saveSettings();
+  };
+
+  dom.applyVirtualKey.addEventListener("click", applyVirtualKey);
+  dom.virtualKey.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      applyVirtualKey();
+    }
   });
 
   ["ctrl", "shift", "alt", "win"].forEach(name => {
@@ -298,6 +443,8 @@ function wireUi() {
 document.addEventListener("DOMContentLoaded", () => {
   dom.preset = byId("preset");
   dom.capture = byId("capture");
+  dom.virtualKey = byId("virtual-key");
+  dom.applyVirtualKey = byId("apply-virtual-key");
   dom.current = byId("current");
   dom.modifiers = byId("modifiers");
   dom.ctrl = byId("ctrl");
