@@ -1,0 +1,9 @@
+{
+  "Name": "Garry's Mod Binds",
+  "Description": "Triggers keyboard and mouse buttons bound in Garry's Mod.",
+  "Category": "Garry's Mod",
+  "com.local.garrysmod.bind.trigger": {
+    "Name": "GMod Bind",
+    "Tooltip": "Press a key bound in Garry's Mod"
+  }
+}

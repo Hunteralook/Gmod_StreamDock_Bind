@@ -1,0 +1,65 @@
+{
+  "Actions": [
+    {
+      "UUID": "com.local.garrysmod.bind.trigger",
+      "Icon": "images/action.svg",
+      "Name": "GMod Bind",
+      "Tooltip": "Press a key bound in Garry's Mod",
+      "PropertyInspectorPath": "property-inspector/index.html",
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "Controllers": [
+        "Keypad"
+      ],
+      "Settings": {
+        "kind": "keyboard",
+        "vk": 119,
+        "code": "F8",
+        "keyLabel": "F8",
+        "mouseAction": "",
+        "ctrl": false,
+        "shift": false,
+        "alt": false,
+        "win": false,
+        "behavior": "hold",
+        "tapDurationMs": 40,
+        "gmodOnly": true,
+        "showLabel": true
+      },
+      "States": [
+        {
+          "Image": "images/key.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "14",
+          "FontStyle": "Bold"
+        }
+      ]
+    }
+  ],
+  "SDKVersion": 1,
+  "Author": "Local",
+  "Name": "Garry's Mod Binds",
+  "Icon": "images/plugin.svg",
+  "Category": "Garry's Mod",
+  "CategoryIcon": "images/category.svg",
+  "Description": "Triggers keyboard and mouse buttons bound in Garry's Mod.",
+  "CodePath": "GModBind.exe",
+  "CodePathWin": "GModBind.exe",
+  "Version": "1.0.0",
+  "ApplicationsToMonitor": {
+    "windows": [
+      "gmod.exe",
+      "gmod_win64.exe",
+      "hl2.exe"
+    ]
+  },
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "2.10.179.426"
+  }
+}

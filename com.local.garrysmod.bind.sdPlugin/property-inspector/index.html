@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GMod Bind</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="panel">
+    <section class="hero">
+      <span class="hero-mark">GM</span>
+      <div>
+        <h1>Бинд Garry's Mod</h1>
+        <p>Выберите ту же клавишу, которая назначена через <code>bind</code> в игре.</p>
+      </div>
+    </section>
+
+    <label class="field">
+      <span>Клавиша</span>
+      <select id="preset"></select>
+    </label>
+
+    <button id="capture" class="capture" type="button">
+      Нажать клавишу для захвата
+    </button>
+
+    <div id="current" class="current">Текущая: F8</div>
+
+    <fieldset id="modifiers">
+      <legend>Модификаторы</legend>
+      <label><input id="ctrl" type="checkbox"> Ctrl</label>
+      <label><input id="shift" type="checkbox"> Shift</label>
+      <label><input id="alt" type="checkbox"> Alt</label>
+      <label><input id="win" type="checkbox"> Win</label>
+    </fieldset>
+
+    <label class="field">
+      <span>Режим</span>
+      <select id="behavior">
+        <option value="hold">Удерживать вместе с кнопкой StreamDock</option>
+        <option value="tap">Короткое нажатие</option>
+      </select>
+    </label>
+
+    <label id="tap-duration-row" class="field">
+      <span>Длительность, мс</span>
+      <input id="tap-duration" type="number" min="10" max="500" step="10">
+    </label>
+
+    <label class="toggle">
+      <input id="gmod-only" type="checkbox">
+      <span>Срабатывать только в активном окне Garry's Mod</span>
+    </label>
+
+    <label class="toggle">
+      <input id="show-label" type="checkbox">
+      <span>Показывать выбранную клавишу на кнопке</span>
+    </label>
+
+    <p class="hint">
+      Для удерживаемых команд (<code>+use</code>, <code>+voicerecord</code>,
+      <code>+showscores</code>) оставьте режим «Удерживать».
+    </p>
+    <p id="status" class="status" aria-live="polite"></p>
+  </main>
+  <script src="property-inspector.js"></script>
+</body>
+</html>

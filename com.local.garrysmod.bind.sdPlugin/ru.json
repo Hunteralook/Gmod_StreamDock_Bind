@@ -1,0 +1,9 @@
+{
+  "Name": "Бинды Garry's Mod",
+  "Description": "Вызывает клавиши и кнопки мыши, назначенные в Garry's Mod.",
+  "Category": "Garry's Mod",
+  "com.local.garrysmod.bind.trigger": {
+    "Name": "Бинд GMod",
+    "Tooltip": "Нажать клавишу, назначенную в Garry's Mod"
+  }
+}
