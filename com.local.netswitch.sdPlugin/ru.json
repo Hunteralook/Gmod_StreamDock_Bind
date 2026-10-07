@@ -1,0 +1,17 @@
+{
+  "Name": "Сетевые переключатели",
+  "Description": "Кнопки для Cloudflare WARP, Happ и zapret с отображением статуса.",
+  "Category": "Сеть",
+  "com.local.netswitch.warp": {
+    "Name": "Cloudflare WARP",
+    "Tooltip": "Подключить или отключить Cloudflare WARP"
+  },
+  "com.local.netswitch.happ": {
+    "Name": "Happ",
+    "Tooltip": "Запустить или закрыть Happ, открыть ссылку happ://"
+  },
+  "com.local.netswitch.zapret": {
+    "Name": "zapret",
+    "Tooltip": "Запустить или остановить zapret (winws.exe)"
+  }
+}

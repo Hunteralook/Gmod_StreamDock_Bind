@@ -5,3 +5,7 @@ self-test.json
 
 # Собранный плагин не хранится в репозитории
 *.exe
+
+# Скрипты, которые плагин NetSwitch генерирует для запуска zapret
+zapret-start.cmd
+zapret-stop.cmd

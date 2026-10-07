@@ -1,0 +1,17 @@
+{
+  "Name": "Network Switches",
+  "Description": "Buttons for Cloudflare WARP, Happ and zapret with live status.",
+  "Category": "Network",
+  "com.local.netswitch.warp": {
+    "Name": "Cloudflare WARP",
+    "Tooltip": "Connect or disconnect Cloudflare WARP"
+  },
+  "com.local.netswitch.happ": {
+    "Name": "Happ",
+    "Tooltip": "Start or close Happ, or open a happ:// link"
+  },
+  "com.local.netswitch.zapret": {
+    "Name": "zapret",
+    "Tooltip": "Start or stop zapret (winws.exe)"
+  }
+}

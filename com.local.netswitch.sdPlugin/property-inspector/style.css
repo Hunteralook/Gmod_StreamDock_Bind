@@ -1,0 +1,158 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #242629;
+  color: #f5f7fa;
+  --accent: #40a9ff;
+  --muted: #bcc3cc;
+  --line: #41454b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 100% 0, rgba(64, 169, 255, 0.14), transparent 44%),
+    #242629;
+}
+
+.panel {
+  display: grid;
+  gap: 11px;
+  padding: 14px;
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero img {
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.hero p,
+.hint,
+.note {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+code {
+  color: #91d5ff;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+select,
+input[type="text"],
+button {
+  width: 100%;
+  min-height: 31px;
+  border: 1px solid #535860;
+  border-radius: 5px;
+  background: #32353a;
+  color: #f5f7fa;
+  font: inherit;
+  font-size: 12px;
+}
+
+select,
+input[type="text"] {
+  padding: 5px 8px;
+}
+
+input[type="text"]::placeholder {
+  color: #7f868f;
+}
+
+button {
+  cursor: pointer;
+  padding: 6px 10px;
+}
+
+button:hover,
+select:focus,
+input[type="text"]:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+.hint {
+  padding: 9px;
+  border-left: 3px solid var(--accent);
+  background: rgba(64, 169, 255, 0.08);
+}
+
+.detected {
+  padding: 8px 9px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.detected b {
+  color: #f5f7fa;
+}
+
+.ok {
+  color: #95de64;
+}
+
+.bad {
+  color: #ff7875;
+}
+
+.status {
+  min-height: 15px;
+  margin: -4px 0 0;
+  color: #91d5ff;
+  text-align: center;
+  font-size: 11px;
+}
+
+[hidden] {
+  display: none !important;
+}

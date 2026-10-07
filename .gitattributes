@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Batch-скрипты должны иметь окончания строк Windows
+*.bat text eol=crlf
+*.cmd text eol=crlf

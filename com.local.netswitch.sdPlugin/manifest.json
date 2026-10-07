@@ -1,0 +1,126 @@
+{
+  "Actions": [
+    {
+      "UUID": "com.local.netswitch.warp",
+      "Icon": "images/warp-action.svg",
+      "Name": "Cloudflare WARP",
+      "Tooltip": "Connect or disconnect Cloudflare WARP",
+      "PropertyInspectorPath": "property-inspector/index.html",
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Controllers": [
+        "Keypad"
+      ],
+      "Settings": {
+        "mode": "toggle",
+        "warpMode": "",
+        "warpCliPath": "",
+        "showStatus": true
+      },
+      "States": [
+        {
+          "Image": "images/warp-off.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "12",
+          "FontStyle": "Bold"
+        },
+        {
+          "Image": "images/warp-on.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "12",
+          "FontStyle": "Bold"
+        }
+      ]
+    },
+    {
+      "UUID": "com.local.netswitch.happ",
+      "Icon": "images/happ-action.svg",
+      "Name": "Happ",
+      "Tooltip": "Start or close Happ, or open a happ:// link",
+      "PropertyInspectorPath": "property-inspector/index.html",
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Controllers": [
+        "Keypad"
+      ],
+      "Settings": {
+        "mode": "toggle",
+        "happPath": "",
+        "happLink": "",
+        "resetProxy": true,
+        "showStatus": true
+      },
+      "States": [
+        {
+          "Image": "images/happ-off.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "12",
+          "FontStyle": "Bold"
+        },
+        {
+          "Image": "images/happ-on.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "12",
+          "FontStyle": "Bold"
+        }
+      ]
+    },
+    {
+      "UUID": "com.local.netswitch.zapret",
+      "Icon": "images/zapret-action.svg",
+      "Name": "zapret",
+      "Tooltip": "Start or stop zapret (winws.exe)",
+      "PropertyInspectorPath": "property-inspector/index.html",
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Controllers": [
+        "Keypad"
+      ],
+      "Settings": {
+        "mode": "toggle",
+        "zapretDir": "",
+        "zapretBat": "",
+        "zapretRun": "bat",
+        "serviceName": "zapret",
+        "elevation": "uac",
+        "showStatus": true
+      },
+      "States": [
+        {
+          "Image": "images/zapret-off.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "12",
+          "FontStyle": "Bold"
+        },
+        {
+          "Image": "images/zapret-on.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "12",
+          "FontStyle": "Bold"
+        }
+      ]
+    }
+  ],
+  "SDKVersion": 1,
+  "Author": "Local",
+  "Name": "Network Switches",
+  "Icon": "images/plugin.svg",
+  "Category": "Network",
+  "CategoryIcon": "images/category.svg",
+  "Description": "Buttons for Cloudflare WARP, Happ and zapret with live status.",
+  "CodePath": "NetSwitch.exe",
+  "CodePathWin": "NetSwitch.exe",
+  "Version": "1.0.0",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "2.10.179.426"
+  }
+}

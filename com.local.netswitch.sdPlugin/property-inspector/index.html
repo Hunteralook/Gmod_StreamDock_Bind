@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Network Switches</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="panel">
+    <section class="hero">
+      <img id="hero-icon" src="../images/plugin.svg" alt="">
+      <div>
+        <h1 id="hero-title">Сетевые переключатели</h1>
+        <p id="hero-text">Кнопка показывает текущее состояние и переключает его по нажатию.</p>
+      </div>
+    </section>
+
+    <label class="field">
+      <span>При нажатии</span>
+      <select id="mode" data-setting="mode">
+        <option value="toggle">Переключать</option>
+        <option value="on">Только включать</option>
+        <option value="off">Только выключать</option>
+        <option value="link" data-only="happ">Открыть ссылку happ://</option>
+      </select>
+    </label>
+
+    <!-- Cloudflare WARP -->
+    <section data-section="warp" hidden>
+      <div class="panel" style="padding: 0">
+        <label class="field">
+          <span>Режим WARP</span>
+          <select data-setting="warpMode">
+            <option value="">Не менять</option>
+            <option value="warp">WARP (весь трафик)</option>
+            <option value="doh">Только DNS (DoH)</option>
+            <option value="warp+doh">WARP + DoH</option>
+            <option value="proxy">Локальный прокси</option>
+            <option value="tunnel_only">Только туннель</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>warp-cli.exe</span>
+          <input type="text" data-setting="warpCliPath" placeholder="Определяется автоматически">
+        </label>
+        <p class="note">Режим переключается перед подключением командой <code>warp-cli mode</code>.</p>
+      </div>
+    </section>
+
+    <!-- Happ -->
+    <section data-section="happ" hidden>
+      <div class="panel" style="padding: 0">
+        <label class="field">
+          <span>Happ.exe</span>
+          <input type="text" data-setting="happPath" placeholder="Определяется автоматически">
+        </label>
+        <label class="field">
+          <span>Ссылка</span>
+          <input type="text" data-setting="happLink" placeholder="happ://…">
+        </label>
+        <label class="toggle">
+          <input type="checkbox" data-setting="resetProxy">
+          <span>После закрытия Happ выключать системный прокси Windows, если он остался на 127.0.0.1</span>
+        </label>
+        <p class="hint">
+          У Happ нет команд для подключения извне, поэтому кнопка запускает и закрывает
+          само приложение. Чтобы при запуске сразу поднималось подключение, включите
+          автоподключение в настройках Happ.
+        </p>
+      </div>
+    </section>
+
+    <!-- zapret -->
+    <section data-section="zapret" hidden>
+      <div class="panel" style="padding: 0">
+        <label class="field">
+          <span>Запуск</span>
+          <select data-setting="zapretRun">
+            <option value="bat">Стратегия (.bat)</option>
+            <option value="service">Служба Windows</option>
+          </select>
+        </label>
+        <label class="field" data-run="bat">
+          <span>Папка zapret</span>
+          <input type="text" data-setting="zapretDir" placeholder="C:\zapret-discord-youtube">
+        </label>
+        <label class="field" data-run="bat">
+          <span>Стратегия</span>
+          <select id="zapret-bat" data-setting="zapretBat"></select>
+        </label>
+        <label class="field" data-run="service">
+          <span>Имя службы</span>
+          <input type="text" data-setting="serviceName" placeholder="zapret">
+        </label>
+        <label class="field">
+          <span>Права админа</span>
+          <select data-setting="elevation">
+            <option value="uac">Запрос UAC при каждом нажатии</option>
+            <option value="task">Через планировщик, без UAC</option>
+          </select>
+        </label>
+        <div class="buttons" data-elevation="task">
+          <button id="install-tasks" type="button">Создать задачи</button>
+          <button id="remove-tasks" type="button">Удалить задачи</button>
+        </div>
+        <p class="note" data-elevation="task">
+          Задачи создаются один раз с подтверждением UAC. После этого кнопка запускает
+          и останавливает zapret без запросов.
+        </p>
+      </div>
+    </section>
+
+    <div id="detected" class="detected">Проверка…</div>
+
+    <label class="toggle">
+      <input type="checkbox" data-setting="showStatus">
+      <span>Показывать статус (ВКЛ / ВЫКЛ) на кнопке</span>
+    </label>
+
+    <button id="refresh" type="button">Проверить ещё раз</button>
+    <p id="status" class="status" aria-live="polite"></p>
+  </main>
+  <script src="property-inspector.js"></script>
+</body>
+</html>
