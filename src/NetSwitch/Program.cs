@@ -11,11 +11,12 @@ namespace NetSwitchPlugin
 {
     internal static class Program
     {
-        public const string WarpAction = "com.local.netswitch.warp";
         public const string HappAction = "com.local.netswitch.happ";
+        public const string ServerAction = "com.local.netswitch.server";
+        public const string SubscriptionAction = "com.local.netswitch.subscription";
         public const string ZapretAction = "com.local.netswitch.zapret";
 
-        private const int PollIntervalMs = 3000;
+        private const int PollIntervalMs = 1000;
 
         private sealed class Button
         {
@@ -23,6 +24,8 @@ namespace NetSwitchPlugin
             public string Action;
             public Dictionary<string, object> Settings;
             public int Busy;
+            public int Refreshing;
+            public DateTime NextRefreshUtc;
             public int LastState = -1;
             public string LastTitle;
         }
@@ -36,7 +39,6 @@ namespace NetSwitchPlugin
         private static ClientWebSocket _socket;
         private static readonly SemaphoreSlim SendGate = new SemaphoreSlim(1, 1);
         private static CancellationToken _token;
-        private static int _polling;
 
         [STAThread]
         private static int Main(string[] args)
@@ -159,7 +161,11 @@ namespace NetSwitchPlugin
                 case "didReceiveSettings":
                 {
                     Button button = Remember(context, action, settings);
-                    if (button != null) Background(RefreshAsync(button, true));
+                    if (button != null)
+                    {
+                        button.NextRefreshUtc = DateTime.MinValue;
+                        Background(RefreshAsync(button, true));
+                    }
                     break;
                 }
                 case "willDisappear":
@@ -179,7 +185,7 @@ namespace NetSwitchPlugin
 
         private static Button Remember(string context, string action, Dictionary<string, object> settings)
         {
-            if (action != WarpAction && action != HappAction && action != ZapretAction) return null;
+            if (RefreshInterval(action) == TimeSpan.Zero) return null;
 
             lock (ButtonsGate)
             {
@@ -194,15 +200,33 @@ namespace NetSwitchPlugin
             }
         }
 
+        private static TimeSpan RefreshInterval(string action)
+        {
+            switch (action)
+            {
+                case HappAction:
+                case ZapretAction:
+                    return TimeSpan.FromSeconds(3);
+                case ServerAction:
+                    return TimeSpan.FromSeconds(30);
+                case SubscriptionAction:
+                    // The subscription itself is downloaded at most every 6 hours; this only updates days left.
+                    return TimeSpan.FromMinutes(1);
+                default:
+                    return TimeSpan.Zero;
+            }
+        }
+
         private static async Task PressAsync(Button button, Dictionary<string, object> settings)
         {
             if (Interlocked.CompareExchange(ref button.Busy, 1, 0) != 0) return;
 
             bool ok = false;
+            Display display = null;
             try
             {
                 await SetTitleAsync(button, "…").ConfigureAwait(false);
-                ok = await Task.Run(() => Execute(button.Action, settings)).ConfigureAwait(false);
+                ok = await Task.Run(() => Execute(button.Action, settings, out display)).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -219,98 +243,118 @@ namespace NetSwitchPlugin
                 { "context", button.Context }
             }).ConfigureAwait(false);
 
+            if (display != null)
+            {
+                button.NextRefreshUtc = DateTime.UtcNow + RefreshInterval(button.Action);
+                await ShowAsync(button, display, true).ConfigureAwait(false);
+                return;
+            }
+
             // Connections need a moment to change state; the poll timer keeps updating afterwards.
             await Task.Delay(800).ConfigureAwait(false);
             await RefreshAsync(button, true).ConfigureAwait(false);
         }
 
-        private static bool Execute(string action, Dictionary<string, object> settings)
+        // Server and subscription buttons refresh their data on press and return what to show.
+        private static bool Execute(string action, Dictionary<string, object> settings, out Display display)
         {
+            display = null;
             switch (action)
             {
-                case WarpAction: return Warp.Press(settings);
-                case HappAction: return Happ.Press(settings);
-                case ZapretAction: return Zapret.Press(settings);
-                default: return false;
+                case HappAction:
+                    return Happ.Press(settings);
+                case ZapretAction:
+                    return Zapret.Press(settings);
+                case ServerAction:
+                    display = ServerButton.Refresh(settings);
+                    return display.State == 1;
+                case SubscriptionAction:
+                    display = SubscriptionButton.Refresh(settings, true);
+                    return Subscription.IsValidUrl(Json.GetTrimmed(settings, "subscriptionUrl")) &&
+                        Subscription.Get(Json.GetTrimmed(settings, "subscriptionUrl"), false).Error == null;
+                default:
+                    return false;
             }
         }
 
-        private static LinkState GetState(string action, Dictionary<string, object> settings)
+        private static Display Describe(Button button)
         {
+            Dictionary<string, object> settings = button.Settings;
             try
             {
-                switch (action)
+                switch (button.Action)
                 {
-                    case WarpAction: return Warp.GetState(settings);
-                    case HappAction: return Happ.GetState(settings);
-                    case ZapretAction: return Zapret.GetState(settings);
-                    default: return LinkState.Unknown;
+                    case HappAction:
+                        return StatusDisplay(Happ.GetState(settings), settings);
+                    case ZapretAction:
+                        return StatusDisplay(Zapret.GetState(settings), settings);
+                    case ServerAction:
+                        return ServerButton.Refresh(settings);
+                    case SubscriptionAction:
+                        return SubscriptionButton.Refresh(settings, false);
+                    default:
+                        return new Display(0, "?");
                 }
             }
             catch (Exception ex)
             {
                 Log.Write("Status check failed: " + ex.Message);
-                return LinkState.Error;
+                return new Display(0, StateLabel(LinkState.Error));
             }
+        }
+
+        private static Display StatusDisplay(LinkState state, Dictionary<string, object> settings)
+        {
+            return new Display(
+                state == LinkState.On ? 1 : 0,
+                Json.GetBool(settings, "showStatus", true) ? StateLabel(state) : string.Empty);
         }
 
         private static async Task RefreshAsync(Button button, bool force)
         {
             if (Volatile.Read(ref button.Busy) != 0) return;
-            LinkState state = await Task.Run(() => GetState(button.Action, button.Settings)).ConfigureAwait(false);
-            await ShowStateAsync(button, state, force).ConfigureAwait(false);
+            if (Interlocked.CompareExchange(ref button.Refreshing, 1, 0) != 0) return;
+            try
+            {
+                button.NextRefreshUtc = DateTime.UtcNow + RefreshInterval(button.Action);
+                Display display = await Task.Run(() => Describe(button)).ConfigureAwait(false);
+                if (Volatile.Read(ref button.Busy) == 0) await ShowAsync(button, display, force).ConfigureAwait(false);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref button.Refreshing, 0);
+            }
         }
 
         private static void PollAll()
         {
-            if (Interlocked.CompareExchange(ref _polling, 1, 0) != 0) return;
-            try
+            List<Button> due = new List<Button>();
+            lock (ButtonsGate)
             {
-                List<Button> snapshot;
-                lock (ButtonsGate) snapshot = new List<Button>(Buttons.Values);
-
-                // Buttons with the same service and settings share one status check per tick.
-                Dictionary<string, LinkState> cache = new Dictionary<string, LinkState>(StringComparer.Ordinal);
-                foreach (Button button in snapshot)
+                foreach (Button button in Buttons.Values)
                 {
-                    if (Volatile.Read(ref button.Busy) != 0) continue;
-
-                    string key = button.Action + "|" + Serializer.Serialize(button.Settings);
-                    LinkState state;
-                    if (!cache.TryGetValue(key, out state))
-                    {
-                        state = GetState(button.Action, button.Settings);
-                        cache[key] = state;
-                    }
-                    ShowStateAsync(button, state, false).GetAwaiter().GetResult();
+                    if (button.NextRefreshUtc <= DateTime.UtcNow) due.Add(button);
                 }
             }
-            catch (Exception ex)
-            {
-                Log.Write("Status poll failed: " + ex.Message);
-            }
-            finally
-            {
-                Interlocked.Exchange(ref _polling, 0);
-            }
+
+            // Every button refreshes on its own task, so a slow ping or download does not hold up the rest.
+            foreach (Button button in due) Background(RefreshAsync(button, false));
         }
 
-        private static async Task ShowStateAsync(Button button, LinkState state, bool force)
+        private static async Task ShowAsync(Button button, Display display, bool force)
         {
-            int keyState = state == LinkState.On ? 1 : 0;
-            if (force || keyState != button.LastState)
+            if (force || display.State != button.LastState)
             {
-                button.LastState = keyState;
+                button.LastState = display.State;
                 await SendAsync(new Dictionary<string, object>
                 {
                     { "event", "setState" },
                     { "context", button.Context },
-                    { "payload", new Dictionary<string, object> { { "state", keyState } } }
+                    { "payload", new Dictionary<string, object> { { "state", display.State } } }
                 }).ConfigureAwait(false);
             }
 
-            string title = Json.GetBool(button.Settings, "showStatus", true) ? StateLabel(state) : string.Empty;
-            if (force || title != button.LastTitle) await SetTitleAsync(button, title).ConfigureAwait(false);
+            if (force || display.Title != button.LastTitle) await SetTitleAsync(button, display.Title).ConfigureAwait(false);
         }
 
         private static Task SetTitleAsync(Button button, string title)
@@ -354,12 +398,13 @@ namespace NetSwitchPlugin
                 bool ok = await Task.Run(() => Zapret.RemoveTasks()).ConfigureAwait(false);
                 notice = ok ? "Задачи удалены." : "Задачи не удалены. Подробности в netswitch.log.";
             }
-            else if (request != "info")
+            else if (request != "info" && request != "reload")
             {
                 return;
             }
 
-            Dictionary<string, object> info = await Task.Run(() => DescribeEnvironment(action, settings)).ConfigureAwait(false);
+            bool reload = request == "reload";
+            Dictionary<string, object> info = await Task.Run(() => DescribeEnvironment(action, settings, reload)).ConfigureAwait(false);
             if (notice != null) info["notice"] = notice;
 
             await SendAsync(new Dictionary<string, object>
@@ -371,14 +416,13 @@ namespace NetSwitchPlugin
             }).ConfigureAwait(false);
         }
 
-        private static Dictionary<string, object> DescribeEnvironment(string action, Dictionary<string, object> settings)
+        private static Dictionary<string, object> DescribeEnvironment(string action, Dictionary<string, object> settings, bool reload)
         {
             Dictionary<string, object> info = new Dictionary<string, object> { { "type", "info" } };
+            Button probe = new Button { Action = action, Settings = settings };
+
             switch (action)
             {
-                case WarpAction:
-                    info["warpCli"] = Warp.ResolveCli(settings) ?? string.Empty;
-                    break;
                 case HappAction:
                     info["happExe"] = Happ.ResolveExe(settings) ?? string.Empty;
                     break;
@@ -392,9 +436,54 @@ namespace NetSwitchPlugin
                     info["tasksInstalled"] = Zapret.TasksInstalled();
                     break;
                 }
+                case ServerAction:
+                case SubscriptionAction:
+                {
+                    string url = Json.GetTrimmed(settings, "subscriptionUrl");
+                    if (url.Length == 0)
+                    {
+                        // Offer the link already entered on another button so it does not have to be pasted twice.
+                        info["knownUrl"] = KnownSubscriptionUrl();
+                        break;
+                    }
+
+                    SubscriptionInfo subscription = Subscription.Get(url, reload);
+                    List<Dictionary<string, object>> servers = new List<Dictionary<string, object>>();
+                    foreach (ServerEntry server in subscription.Servers)
+                    {
+                        servers.Add(new Dictionary<string, object>
+                        {
+                            { "name", server.Name },
+                            { "host", server.Host },
+                            { "port", server.Port },
+                            { "udp", server.Udp }
+                        });
+                    }
+                    info["servers"] = servers;
+                    info["title"] = subscription.Title;
+                    info["error"] = subscription.Error ?? string.Empty;
+                    info["daysLeft"] = SubscriptionButton.DaysLeft(subscription);
+                    info["trafficLeft"] = SubscriptionButton.TrafficLeft(subscription);
+                    info["used"] = SubscriptionButton.FormatBytes(subscription.Upload + subscription.Download);
+                    break;
+                }
             }
-            info["state"] = StateLabel(GetState(action, settings));
+
+            info["state"] = Describe(probe).Title.Replace("\n", " · ");
             return info;
+        }
+
+        private static string KnownSubscriptionUrl()
+        {
+            lock (ButtonsGate)
+            {
+                foreach (Button button in Buttons.Values)
+                {
+                    string url = Json.GetTrimmed(button.Settings, "subscriptionUrl");
+                    if (url.Length > 0) return url;
+                }
+            }
+            return string.Empty;
         }
 
         private static async Task SendAsync(Dictionary<string, object> message)

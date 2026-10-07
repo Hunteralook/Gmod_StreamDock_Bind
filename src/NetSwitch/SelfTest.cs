@@ -14,12 +14,29 @@ namespace NetSwitchPlugin
         {
             List<string> failures = new List<string>();
 
-            Check(failures, "warp connected", Warp.ParseStatus("Status update: Connected\r\nNetwork: healthy") == LinkState.On);
-            Check(failures, "warp disconnected", Warp.ParseStatus("Status update: Disconnected\r\nReason: Manual Disconnection") == LinkState.Off);
-            Check(failures, "warp connecting", Warp.ParseStatus("Status update: Connecting\r\nReason: Checking connectivity") == LinkState.Busy);
-            Check(failures, "warp daemon down", Warp.ParseStatus("Unable to connect to the CloudflareWARP daemon") == LinkState.Error);
-            Check(failures, "warp old cli", Warp.RejectsAcceptTos("error: Found argument '--accept-tos' which wasn't expected"));
-            Check(failures, "warp normal error", !Warp.RejectsAcceptTos("Error: registration missing"));
+            ServerEntry vless = Subscription.ParseLink("vless://11111111-2222-3333-4444-555555555555@nl.example.com:443?type=tcp&security=reality#%F0%9F%87%B3%F0%9F%87%B1%20Netherlands");
+            Check(failures, "vless host", vless != null && vless.Host == "nl.example.com" && vless.Port == 443 && !vless.Udp);
+            Check(failures, "vless name", vless != null && vless.Name == "\U0001F1F3\U0001F1F1 Netherlands");
+            Check(failures, "short name", ServerButton.ShortName("\U0001F1F3\U0001F1F1 Netherlands #1", "x") == "NL Netherl");
+            ServerEntry vmess = Subscription.ParseLink("vmess://" + Convert.ToBase64String(Encoding.UTF8.GetBytes("{\"ps\":\"DE\",\"add\":\"1.2.3.4\",\"port\":\"8443\"}")));
+            Check(failures, "vmess", vmess != null && vmess.Host == "1.2.3.4" && vmess.Port == 8443 && vmess.Name == "DE");
+            ServerEntry ss = Subscription.ParseLink("ss://" + Convert.ToBase64String(Encoding.UTF8.GetBytes("aes-256-gcm:pw")) + "@[2001:db8::1]:8388#SS");
+            Check(failures, "shadowsocks ipv6", ss != null && ss.Host == "2001:db8::1" && ss.Port == 8388);
+            ServerEntry hy2 = Subscription.ParseLink("hy2://secret@hy.example.com:5443?sni=x#HY");
+            Check(failures, "hysteria udp", hy2 != null && hy2.Udp && hy2.Port == 5443);
+
+            string body = Convert.ToBase64String(Encoding.UTF8.GetBytes(
+                "#profile-title: base64:" + Convert.ToBase64String(Encoding.UTF8.GetBytes("Мой VPN")) + "\n" +
+                "trojan://pw@a.example.com:443#A\nvless://id@b.example.com:8443#B\n"));
+            SubscriptionInfo info = Subscription.Parse(body, "upload=1073741824; download=1073741824; total=10737418240; expire=0", null);
+            Check(failures, "subscription servers", info.Servers.Count == 2 && info.Error == null);
+            Check(failures, "subscription title", info.Title == "Мой VPN");
+            Check(failures, "subscription traffic", SubscriptionButton.TrafficLeft(info) == "8 ГБ" && SubscriptionButton.DaysLeft(info) == "∞");
+            SubscriptionInfo json = Subscription.Parse(
+                "[{\"remarks\":\"JSON\",\"outbounds\":[{\"protocol\":\"vless\",\"settings\":{\"vnext\":[{\"address\":\"c.example.com\",\"port\":443}]}}]}]",
+                null, null);
+            Check(failures, "json subscription", json.Servers.Count == 1 && json.Servers[0].Name == "JSON" && json.Servers[0].Port == 443);
+            Check(failures, "crypt subscription", Subscription.Parse("happ://crypt3/abc", null, null).Error != null);
 
             Check(failures, "happ quoted", Happ.ExtractExecutable("\"C:\\Program Files\\Happ\\Happ.exe\" \"%1\"") == "C:\\Program Files\\Happ\\Happ.exe");
             Check(failures, "happ plain", Happ.ExtractExecutable("C:\\Happ\\Happ.exe %1") == "C:\\Happ\\Happ.exe");

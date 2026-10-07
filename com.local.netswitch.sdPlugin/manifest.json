@@ -1,39 +1,6 @@
 {
   "Actions": [
     {
-      "UUID": "com.local.netswitch.warp",
-      "Icon": "images/warp-action.svg",
-      "Name": "Cloudflare WARP",
-      "Tooltip": "Connect or disconnect Cloudflare WARP",
-      "PropertyInspectorPath": "property-inspector/index.html",
-      "UserTitleEnabled": true,
-      "SupportedInMultiActions": false,
-      "DisableAutomaticStates": true,
-      "Controllers": [
-        "Keypad"
-      ],
-      "Settings": {
-        "mode": "toggle",
-        "warpMode": "",
-        "warpCliPath": "",
-        "showStatus": true
-      },
-      "States": [
-        {
-          "Image": "images/warp-off.svg",
-          "TitleAlignment": "bottom",
-          "FontSize": "12",
-          "FontStyle": "Bold"
-        },
-        {
-          "Image": "images/warp-on.svg",
-          "TitleAlignment": "bottom",
-          "FontSize": "12",
-          "FontStyle": "Bold"
-        }
-      ]
-    },
-    {
       "UUID": "com.local.netswitch.happ",
       "Icon": "images/happ-action.svg",
       "Name": "Happ",
@@ -63,6 +30,71 @@
           "Image": "images/happ-on.svg",
           "TitleAlignment": "bottom",
           "FontSize": "12",
+          "FontStyle": "Bold"
+        }
+      ]
+    },
+    {
+      "UUID": "com.local.netswitch.server",
+      "Icon": "images/server-action.svg",
+      "Name": "Happ server",
+      "Tooltip": "Shows the name and ping of one server from the subscription",
+      "PropertyInspectorPath": "property-inspector/index.html",
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Controllers": [
+        "Keypad"
+      ],
+      "Settings": {
+        "subscriptionUrl": "",
+        "serverName": "",
+        "serverHost": "",
+        "serverPort": "",
+        "serverUdp": false,
+        "serverLabel": ""
+      },
+      "States": [
+        {
+          "Image": "images/server-off.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "11",
+          "FontStyle": "Bold"
+        },
+        {
+          "Image": "images/server-on.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "11",
+          "FontStyle": "Bold"
+        }
+      ]
+    },
+    {
+      "UUID": "com.local.netswitch.subscription",
+      "Icon": "images/subscription-action.svg",
+      "Name": "Happ subscription",
+      "Tooltip": "Downloads the subscription and shows days and traffic left",
+      "PropertyInspectorPath": "property-inspector/index.html",
+      "UserTitleEnabled": true,
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Controllers": [
+        "Keypad"
+      ],
+      "Settings": {
+        "subscriptionUrl": ""
+      },
+      "States": [
+        {
+          "Image": "images/subscription-off.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "11",
+          "FontStyle": "Bold"
+        },
+        {
+          "Image": "images/subscription-on.svg",
+          "TitleAlignment": "bottom",
+          "FontSize": "11",
           "FontStyle": "Bold"
         }
       ]
@@ -110,10 +142,10 @@
   "Icon": "images/plugin.svg",
   "Category": "Network",
   "CategoryIcon": "images/category.svg",
-  "Description": "Buttons for Cloudflare WARP, Happ and zapret with live status.",
+  "Description": "Buttons for Happ (app, server ping, subscription) and zapret with live status.",
   "CodePath": "NetSwitch.exe",
   "CodePathWin": "NetSwitch.exe",
-  "Version": "1.0.0",
+  "Version": "1.1.0",
   "OS": [
     {
       "Platform": "windows",

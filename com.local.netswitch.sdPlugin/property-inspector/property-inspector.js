@@ -1,17 +1,30 @@
 "use strict";
 
 const actions = {
-  "com.local.netswitch.warp": {
-    key: "warp",
-    title: "Cloudflare WARP",
-    text: "Подключает и отключает WARP через warp-cli.",
-    defaults: { mode: "toggle", warpMode: "", warpCliPath: "", showStatus: true }
-  },
   "com.local.netswitch.happ": {
     key: "happ",
     title: "Happ",
     text: "Запускает и закрывает Happ или открывает ссылку happ://.",
     defaults: { mode: "toggle", happPath: "", happLink: "", resetProxy: true, showStatus: true }
+  },
+  "com.local.netswitch.server": {
+    key: "server",
+    title: "Сервер Happ",
+    text: "Показывает название и пинг одного сервера из подписки.",
+    defaults: {
+      subscriptionUrl: "",
+      serverName: "",
+      serverHost: "",
+      serverPort: "",
+      serverUdp: false,
+      serverLabel: ""
+    }
+  },
+  "com.local.netswitch.subscription": {
+    key: "subscription",
+    title: "Подписка Happ",
+    text: "Скачивает подписку и показывает, сколько осталось дней и трафика.",
+    defaults: { subscriptionUrl: "" }
   },
   "com.local.netswitch.zapret": {
     key: "zapret",
@@ -93,6 +106,41 @@ function fillStrategies() {
   });
 }
 
+function fillServers() {
+  const select = byId("server-select");
+  const servers = Array.isArray(info.servers) ? info.servers : [];
+  select.replaceChildren();
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = servers.length > 0
+    ? "Выберите сервер"
+    : (settings.subscriptionUrl ? "Серверы не загружены" : "Укажите ссылку на подписку");
+  select.appendChild(placeholder);
+
+  let selected = "";
+  servers.forEach((server, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = server.name;
+    select.appendChild(option);
+    if (server.host === settings.serverHost && String(server.port) === String(settings.serverPort) &&
+        (selected === "" || server.name === settings.serverName)) {
+      selected = String(index);
+    }
+  });
+
+  // Keep showing a server that is no longer in the subscription instead of silently dropping it.
+  if (selected === "" && settings.serverHost) {
+    const option = document.createElement("option");
+    option.value = "saved";
+    option.textContent = `${settings.serverName || settings.serverHost} (нет в подписке)`;
+    select.appendChild(option);
+    selected = "saved";
+  }
+  select.value = selected;
+}
+
 function line(label, value, good) {
   const row = document.createElement("div");
   const name = document.createElement("b");
@@ -108,9 +156,15 @@ function renderDetected() {
   const box = byId("detected");
   if (info.type !== "info") return;
 
-  const rows = [line("Состояние", info.state || "?")];
-  if (definition.key === "warp") {
-    rows.push(line("warp-cli", info.warpCli || "не найден", Boolean(info.warpCli)));
+  const rows = [line("На кнопке", info.state || "?")];
+  if (info.error) rows.push(line("Ошибка", info.error, false));
+  if (definition.key === "server" && settings.serverHost) {
+    rows.push(line("Адрес", `${settings.serverHost}:${settings.serverPort}${settings.serverUdp ? " (UDP)" : ""}`));
+  } else if (definition.key === "subscription" && settings.subscriptionUrl) {
+    if (info.title) rows.push(line("Подписка", info.title));
+    rows.push(line("Осталось", `${info.daysLeft || "?"}, ${info.trafficLeft || "?"}`));
+    rows.push(line("Использовано", info.used || "?"));
+    rows.push(line("Серверов", String((info.servers || []).length)));
   } else if (definition.key === "happ") {
     rows.push(line("Happ", info.happExe || "не найден", Boolean(info.happExe)));
   } else if (definition.key === "zapret") {
@@ -136,8 +190,14 @@ function render() {
   });
 
   document.querySelectorAll("[data-section]").forEach(section => {
-    section.hidden = section.dataset.section !== definition.key;
+    section.hidden = !section.dataset.section.split(" ").includes(definition.key);
   });
+  document.querySelectorAll("[data-only-section]").forEach(element => {
+    element.hidden = element.dataset.onlySection !== definition.key;
+  });
+  const switchable = definition.key === "happ" || definition.key === "zapret";
+  byId("mode-row").hidden = !switchable;
+  byId("show-status-row").hidden = !switchable;
   document.querySelectorAll("[data-only]").forEach(option => {
     option.hidden = option.dataset.only !== definition.key;
     option.disabled = option.hidden;
@@ -151,6 +211,7 @@ function render() {
 
   fillStrategies();
   byId("zapret-bat").value = settings.zapretBat || "";
+  fillServers();
   renderDetected();
 }
 
@@ -164,6 +225,16 @@ function wireUi() {
   });
 
   byId("refresh").addEventListener("click", () => requestInfo());
+  byId("reload").addEventListener("click", () => requestInfo("reload"));
+  byId("server-select").addEventListener("change", event => {
+    const server = (info.servers || [])[Number(event.target.value)];
+    if (!server || event.target.value === "") return;
+    settings.serverName = server.name;
+    settings.serverHost = server.host;
+    settings.serverPort = String(server.port);
+    settings.serverUdp = Boolean(server.udp);
+    saveSettings(true);
+  });
   byId("install-tasks").addEventListener("click", () => {
     showStatus("Подтвердите запрос UAC…");
     requestInfo("installTasks");
@@ -180,7 +251,7 @@ function connectElgatoStreamDeckSocket(inPort, inPropertyInspectorUuid, inRegist
   const actionInfo = JSON.parse(inActionInfo);
   context = actionInfo.context;
   actionUuid = actionInfo.action;
-  definition = actions[actionUuid] || actions["com.local.netswitch.warp"];
+  definition = actions[actionUuid] || actions["com.local.netswitch.happ"];
   settings = { ...definition.defaults, ...(actionInfo.payload?.settings || {}) };
 
   byId("hero-icon").src = `../images/${definition.key}-on.svg`;
@@ -201,6 +272,12 @@ function connectElgatoStreamDeckSocket(inPort, inPropertyInspectorUuid, inRegist
     } else if (message.event === "sendToPropertyInspector" && message.payload?.type === "info") {
       info = message.payload;
       if (info.notice) showStatus(info.notice);
+
+      if (!settings.subscriptionUrl && info.knownUrl && "subscriptionUrl" in definition.defaults) {
+        settings.subscriptionUrl = info.knownUrl;
+        saveSettings(true);
+        return;
+      }
 
       const strategies = Array.isArray(info.strategies) ? info.strategies : [];
       if (definition.key === "zapret" && !settings.zapretBat && strategies.length > 0) {

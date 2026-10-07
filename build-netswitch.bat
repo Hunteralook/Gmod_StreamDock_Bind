@@ -8,7 +8,7 @@ if not exist "%CSC%" (
   exit /b 1
 )
 
-"%CSC%" /nologo /target:winexe /platform:anycpu /optimize+ ^
+"%CSC%" /nologo /codepage:65001 /target:winexe /platform:anycpu /optimize+ ^
  /out:"%~dp0com.local.netswitch.sdPlugin\NetSwitch.exe" ^
  /r:System.Web.Extensions.dll /r:System.ServiceProcess.dll ^
  "%~dp0src\NetSwitch\*.cs"

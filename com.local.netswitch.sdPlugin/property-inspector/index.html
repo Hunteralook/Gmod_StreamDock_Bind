@@ -16,7 +16,7 @@
       </div>
     </section>
 
-    <label class="field">
+    <label id="mode-row" class="field">
       <span>При нажатии</span>
       <select id="mode" data-setting="mode">
         <option value="toggle">Переключать</option>
@@ -26,25 +26,31 @@
       </select>
     </label>
 
-    <!-- Cloudflare WARP -->
-    <section data-section="warp" hidden>
+    <!-- Happ: server and subscription -->
+    <section data-section="server subscription" hidden>
       <div class="panel" style="padding: 0">
         <label class="field">
-          <span>Режим WARP</span>
-          <select data-setting="warpMode">
-            <option value="">Не менять</option>
-            <option value="warp">WARP (весь трафик)</option>
-            <option value="doh">Только DNS (DoH)</option>
-            <option value="warp+doh">WARP + DoH</option>
-            <option value="proxy">Локальный прокси</option>
-            <option value="tunnel_only">Только туннель</option>
-          </select>
+          <span>Подписка</span>
+          <input type="text" data-setting="subscriptionUrl" placeholder="https://…">
         </label>
-        <label class="field">
-          <span>warp-cli.exe</span>
-          <input type="text" data-setting="warpCliPath" placeholder="Определяется автоматически">
+        <label class="field" data-only-section="server">
+          <span>Сервер</span>
+          <select id="server-select"></select>
         </label>
-        <p class="note">Режим переключается перед подключением командой <code>warp-cli mode</code>.</p>
+        <label class="field" data-only-section="server">
+          <span>Подпись</span>
+          <input type="text" data-setting="serverLabel" placeholder="Из названия сервера">
+        </label>
+        <button id="reload" type="button">Скачать подписку заново</button>
+        <p class="note" data-only-section="server">
+          Пинг — время TCP-соединения с сервером (для Hysteria и TUIC — ICMP), как
+          «TCP ping» в Happ. Обновляется раз в 30 секунд и по нажатию. Если Happ работает
+          в режиме TUN, пинг может получаться заниженным.
+        </p>
+        <p class="note" data-only-section="subscription">
+          Нажатие скачивает подписку заново, кнопка показывает остаток дней и трафика.
+          Список серверов внутри Happ так не обновляется: в Happ нажмите «…» → «Обновить».
+        </p>
       </div>
     </section>
 
@@ -113,7 +119,7 @@
 
     <div id="detected" class="detected">Проверка…</div>
 
-    <label class="toggle">
+    <label id="show-status-row" class="toggle">
       <input type="checkbox" data-setting="showStatus">
       <span>Показывать статус (ВКЛ / ВЫКЛ) на кнопке</span>
     </label>

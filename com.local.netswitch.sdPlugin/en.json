@@ -1,14 +1,18 @@
 {
   "Name": "Network Switches",
-  "Description": "Buttons for Cloudflare WARP, Happ and zapret with live status.",
+  "Description": "Buttons for Happ (app, server ping, subscription) and zapret with live status.",
   "Category": "Network",
-  "com.local.netswitch.warp": {
-    "Name": "Cloudflare WARP",
-    "Tooltip": "Connect or disconnect Cloudflare WARP"
-  },
   "com.local.netswitch.happ": {
     "Name": "Happ",
     "Tooltip": "Start or close Happ, or open a happ:// link"
+  },
+  "com.local.netswitch.server": {
+    "Name": "Happ server",
+    "Tooltip": "Shows the name and ping of one server from the subscription"
+  },
+  "com.local.netswitch.subscription": {
+    "Name": "Happ subscription",
+    "Tooltip": "Downloads the subscription and shows days and traffic left"
   },
   "com.local.netswitch.zapret": {
     "Name": "zapret",
